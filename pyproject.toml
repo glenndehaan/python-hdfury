@@ -1,0 +1,21 @@
+[project]
+name = "hdfury"
+version = "1.0.0"
+description = "Asynchronous Python client for HDFury devices"
+authors = [
+    { name = "Glenn de Haan", email = "glenn@dehaan.cloud" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/glenndehaan/python-hdfury"
+Issues = "https://github.com/glenndehaan/python-hdfury/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
