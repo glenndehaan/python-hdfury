@@ -1,7 +1,9 @@
 """HDFury Client API."""
 
+import asyncio
 from asyncio import TimeoutError
 import json
+import time
 
 import aiohttp
 from aiohttp import ClientError, ClientResponseError
@@ -13,8 +15,19 @@ class HDFuryAPI:
     """Asynchronous API client for HDFury devices."""
 
     def __init__(self, host: str, session: aiohttp.ClientSession | None = None) -> None:
+        """HDFury API Client."""
+
         self.host = host
         self._session = session or aiohttp.ClientSession()
+        self._last_command_time = 0
+        self._debounce_delay = 2  # seconds
+
+    async def _wait_for_debounce(self) -> None:
+        """Helper to ensure at least `_debounce_delay` seconds have passed since last command."""
+        elapsed = time.time() - self._last_command_time
+        if elapsed < self._debounce_delay:
+            wait_time = self._debounce_delay - elapsed
+            await asyncio.sleep(wait_time)
 
     async def _request(self, endpoint: str) -> str:
         """Handle a request to the HDFury device."""
@@ -23,7 +36,9 @@ class HDFuryAPI:
         try:
             async with self._session.get(url, timeout=10) as response:
                 if response.status != 200:
-                    raise HDFuryConnectionError(f"Unexpected response from: {url} (Status: {response.status})")
+                    raise HDFuryConnectionError(
+                        f"Unexpected response from: {url} (Status: {response.status})"
+                    )
 
                 return await response.text()
         except TimeoutError:
@@ -35,6 +50,7 @@ class HDFuryAPI:
 
     async def get_board(self) -> dict:
         """Fetch board info."""
+        await self._wait_for_debounce()
         response = await self._request("/ssi/brdinfo.ssi")
         try:
             return json.loads(response)
@@ -43,6 +59,7 @@ class HDFuryAPI:
 
     async def get_info(self) -> dict:
         """Fetch device info."""
+        await self._wait_for_debounce()
         response = await self._request("/ssi/infopage.ssi")
         try:
             return json.loads(response)
@@ -51,6 +68,7 @@ class HDFuryAPI:
 
     async def get_config(self) -> dict:
         """Fetch device configuration."""
+        await self._wait_for_debounce()
         response = await self._request("/ssi/confpage.ssi")
         try:
             return json.loads(response)
@@ -60,6 +78,7 @@ class HDFuryAPI:
     async def _send_command(self, command: str, option: str = "") -> None:
         """Send a command to the device."""
         await self._request(f"/cmd?{command}={option}")
+        self._last_command_time = time.time()
 
     async def issue_reboot(self) -> None:
         """Send reboot command to the device."""
@@ -72,6 +91,10 @@ class HDFuryAPI:
     async def set_operation_mode(self, mode: str) -> None:
         """Send operation mode command to the device."""
         await self._send_command("opmode", mode)
+
+    async def set_port_selection(self, tx0: str, tx1: str) -> None:
+        """Send operation mode command to the device."""
+        await self._send_command("insel", f"{tx0}%20{tx1}")
 
     async def set_auto_switch_inputs(self, state: str) -> None:
         """Send auto switch inputs command to the device."""

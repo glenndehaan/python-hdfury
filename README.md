@@ -71,17 +71,18 @@ HDFuryAPI(host: str, session: aiohttp.ClientSession | None = None)
 
 #### Command Methods
 
-| Method                                                    | Description                 |
-|-----------------------------------------------------------|-----------------------------|
-| `issue_reboot()`                                          | Reboot the device           |
-| `issue_hotplug()`                                         | Trigger HDMI hotplug        |
-| `set_operation_mode(mode)`                                | Set device operation mode   |
-| `set_auto_switch_inputs(state)`                           | Toggle auto input switching |
-| `set_htpc_mode_rx0(state)` → `set_htpc_mode_rx3(state)`   | Set HTPC mode per input     |
-| `set_mute_tx0_audio(state)` → `set_mute_tx1_audio(state)` | Mute/unmute TX audio        |
-| `set_oled(state)`                                         | Control OLED display        |
-| `set_ir_active(state)`                                    | Enable/disable IR           |
-| `set_relay(state)`                                        | Control relay state         |
+| Method                                                    | Description                    |
+|-----------------------------------------------------------|--------------------------------|
+| `issue_reboot()`                                          | Reboot the device              |
+| `issue_hotplug()`                                         | Trigger HDMI hotplug           |
+| `set_operation_mode(mode)`                                | Set device operation mode      |
+| `set_port_selection(tx0, tx1)`                            | Set device HDMI port selection |
+| `set_auto_switch_inputs(state)`                           | Toggle auto input switching    |
+| `set_htpc_mode_rx0(state)` → `set_htpc_mode_rx3(state)`   | Set HTPC mode per input        |
+| `set_mute_tx0_audio(state)` → `set_mute_tx1_audio(state)` | Mute/unmute TX audio           |
+| `set_oled(state)`                                         | Control OLED display           |
+| `set_ir_active(state)`                                    | Enable/disable IR              |
+| `set_relay(state)`                                        | Control relay state            |
 
 #### Cleanup
 
