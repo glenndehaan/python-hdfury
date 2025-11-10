@@ -102,6 +102,30 @@ All exceptions inherit from `HDFuryError`.
 | `HDFuryConnectionError` | Connection-related errors (timeouts, bad responses, etc.) |
 | `HDFuryParseError`      | Raised when JSON decoding fails                           |
 
+## Constants
+
+### `OPERATION_MODES`
+
+Defined in [`const.py`](src/hdfury/const.py), this dictionary maps known operation mode identifiers to their human-readable descriptions.
+
+```python
+from hdfury import OPERATION_MODES
+
+for mode, description in OPERATION_MODES.items():
+    print(f"{mode}: {description}")
+```
+
+| Key   | Description                            |
+|-------|----------------------------------------|
+| `"0"` | Mode 0 - Splitter TX0/TX1 FRL5 VRR     |
+| `"1"` | Mode 1 - Splitter TX0/TX1 UPSCALE FRL5 |
+| `"2"` | Mode 2 - Matrix TMDS                   |
+| `"3"` | Mode 3 - Matrix FRL→TMDS               |
+| `"4"` | Mode 4 - Matrix DOWNSCALE              |
+| `"5"` | Mode 5 - Matrix RX0:FRL5 + RX1-3:TMDS  |
+
+These can be used to display or interpret the current operating mode returned by the device.
+
 ## License
 
 MIT
