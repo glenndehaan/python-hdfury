@@ -126,6 +126,42 @@ for mode, description in OPERATION_MODES.items():
 
 These can be used to display or interpret the current operating mode returned by the device.
 
+### `TX0_INPUT_PORTS`
+
+Maps available **TX0** input port IDs to human-readable labels.
+
+```python
+from hdfury import TX0_INPUT_PORTS
+
+print(TX0_INPUT_PORTS["1"])  # Output: Input 1
+```
+
+| Key   | Description |
+|-------|-------------|
+| `"0"` | Input 0     |
+| `"1"` | Input 1     |
+| `"2"` | Input 2     |
+| `"3"` | Input 3     |
+| `"4"` | Copy TX0    |
+
+### `TX1_INPUT_PORTS`
+
+Maps available **TX1** input port IDs to human-readable labels.
+
+```python
+from hdfury import TX1_INPUT_PORTS
+
+print(TX1_INPUT_PORTS["3"])  # Output: Input 3
+```
+
+| Key   | Description |
+|-------|-------------|
+| `"0"` | Input 0     |
+| `"1"` | Input 1     |
+| `"2"` | Input 2     |
+| `"3"` | Input 3     |
+| `"4"` | Copy TX1    |
+
 ## License
 
 MIT
