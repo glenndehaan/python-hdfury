@@ -14,7 +14,7 @@ TX0_INPUT_PORTS = {
     "1": "Input 1",
     "2": "Input 2",
     "3": "Input 3",
-    "4": "Copy TX0",
+    "4": "Copy TX1",
 }
 
 TX1_INPUT_PORTS = {
@@ -22,5 +22,5 @@ TX1_INPUT_PORTS = {
     "1": "Input 1",
     "2": "Input 2",
     "3": "Input 3",
-    "4": "Copy TX1",
+    "4": "Copy TX0",
 }
