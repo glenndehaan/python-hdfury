@@ -48,32 +48,39 @@ class HDFuryAPI:
         except Exception as err:
             raise HDFuryConnectionError(f"Unexpected error ({url}): {err}") from err
 
-    async def get_board(self) -> dict:
-        """Fetch board info."""
-        await self._wait_for_debounce()
-        response = await self._request("/ssi/brdinfo.ssi")
+    async def _request_json(self, path: str) -> dict:
+        """Handle a request to the HDFury device and parse JSON."""
+        response = await self._request(path)
         try:
             return json.loads(response)
         except json.JSONDecodeError as err:
             raise HDFuryParseError(f"Unable to decode JSON: {err}") from err
+
+    async def get_board(self) -> dict:
+        """Fetch board info."""
+        await self._wait_for_debounce()
+        response = await self._request_json("/ssi/brdinfo.ssi")
+        return response
 
     async def get_info(self) -> dict:
         """Fetch device info."""
         await self._wait_for_debounce()
-        response = await self._request("/ssi/infopage.ssi")
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError as err:
-            raise HDFuryParseError(f"Unable to decode JSON: {err}") from err
+        response = await self._request_json("/ssi/infopage.ssi")
+        return response
 
     async def get_config(self) -> dict:
         """Fetch device configuration."""
         await self._wait_for_debounce()
-        response = await self._request("/ssi/confpage.ssi")
+        config_response = await self._request_json("/ssi/confpage.ssi")
+
         try:
-            return json.loads(response)
-        except json.JSONDecodeError as err:
-            raise HDFuryParseError(f"Unable to decode JSON: {err}") from err
+            cec_response = await self._request_json("/ssi/cecpage.ssi")
+        except HDFuryConnectionError:
+            cec_response = {}
+        except HDFuryParseError:
+            cec_response = {}
+
+        return {**cec_response, **config_response}
 
     async def _send_command(self, command: str, option: str = "") -> None:
         """Send a command to the device."""
@@ -135,6 +142,22 @@ class HDFuryAPI:
     async def set_relay(self, state: str) -> None:
         """Send relay command to the device."""
         await self._send_command("relay", state)
+
+    async def set_cec_rx0(self, state: str) -> None:
+        """Send cec enable 0 command to the device."""
+        await self._send_command("cec0en", state)
+
+    async def set_cec_rx1(self, state: str) -> None:
+        """Send cec enable 1 command to the device."""
+        await self._send_command("cec1en", state)
+
+    async def set_cec_rx2(self, state: str) -> None:
+        """Send cec enable 2 command to the device."""
+        await self._send_command("cec2en", state)
+
+    async def set_cec_rx3(self, state: str) -> None:
+        """Send cec enable 3 command to the device."""
+        await self._send_command("cec3en", state)
 
     async def close(self) -> None:
         """Close open client session."""

@@ -63,11 +63,11 @@ HDFuryAPI(host: str, session: aiohttp.ClientSession | None = None)
 
 #### Fetch Methods
 
-| Method         | Description                                   |
-|----------------|-----------------------------------------------|
-| `get_board()`  | Get board information (`/ssi/brdinfo.ssi`)    |
-| `get_info()`   | Get general device info (`/ssi/infopage.ssi`) |
-| `get_config()` | Get configuration data (`/ssi/confpage.ssi`)  |
+| Method         | Description                                                                                  |
+|----------------|----------------------------------------------------------------------------------------------|
+| `get_board()`  | Get board information (`/ssi/brdinfo.ssi`)                                                   |
+| `get_info()`   | Get general device info (`/ssi/infopage.ssi`)                                                |
+| `get_config()` | Get configuration data (`/ssi/confpage.ssi`) and CEC data (if provided) (`/ssi/cecpage.ssi`) |
 
 #### Command Methods
 
@@ -83,6 +83,7 @@ HDFuryAPI(host: str, session: aiohttp.ClientSession | None = None)
 | `set_oled(state)`                                         | Control OLED display           |
 | `set_ir_active(state)`                                    | Enable/disable IR              |
 | `set_relay(state)`                                        | Control relay state            |
+| `set_cec_rx0(state)` → `set_cec_rx3(state)`               | Enable/disable CEC per input   |
 
 #### Cleanup
 
