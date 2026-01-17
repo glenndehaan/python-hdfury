@@ -4,11 +4,14 @@ import asyncio
 from asyncio import TimeoutError
 import json
 import time
+from typing import Literal
 
 import aiohttp
 from aiohttp import ClientError, ClientResponseError
 
 from .exceptions import HDFuryConnectionError, HDFuryParseError
+
+StateStr = Literal["0", "1", "off", "on"]
 
 
 class HDFuryAPI:
@@ -21,6 +24,16 @@ class HDFuryAPI:
         self._session = session or aiohttp.ClientSession()
         self._last_command_time = 0
         self._debounce_delay = 2  # seconds
+
+    def _normalize_state(self, state: StateStr, *, output: Literal["text", "number"] = "text") -> str:
+        state = state.lower()
+
+        if state in ("1", "on"):
+            return "on" if output == "text" else "1"
+        elif state in ("0", "off"):
+            return "off" if output == "text" else "0"
+
+        raise HDFuryParseError(f"Invalid state: {state}")
 
     async def _wait_for_debounce(self) -> None:
         """Helper to ensure at least `_debounce_delay` seconds have passed since last command."""
@@ -105,59 +118,59 @@ class HDFuryAPI:
 
     async def set_auto_switch_inputs(self, state: str) -> None:
         """Send auto switch inputs command to the device."""
-        await self._send_command("autosw", state)
+        await self._send_command("autosw", self._normalize_state(state, output="text"))
 
     async def set_htpc_mode_rx0(self, state: str) -> None:
         """Send htpc mode rx0 command to the device."""
-        await self._send_command("htpcmode0", state)
+        await self._send_command("htpcmode0", self._normalize_state(state, output="text"))
 
     async def set_htpc_mode_rx1(self, state: str) -> None:
         """Send htpc mode rx1 command to the device."""
-        await self._send_command("htpcmode1", state)
+        await self._send_command("htpcmode1", self._normalize_state(state, output="text"))
 
     async def set_htpc_mode_rx2(self, state: str) -> None:
         """Send htpc mode rx2 command to the device."""
-        await self._send_command("htpcmode2", state)
+        await self._send_command("htpcmode2", self._normalize_state(state, output="text"))
 
     async def set_htpc_mode_rx3(self, state: str) -> None:
         """Send htpc mode rx3 command to the device."""
-        await self._send_command("htpcmode3", state)
+        await self._send_command("htpcmode3", self._normalize_state(state, output="text"))
 
     async def set_mute_tx0_audio(self, state: str) -> None:
         """Send mute tx0 audio command to the device."""
-        await self._send_command("mutetx0audio", state)
+        await self._send_command("mutetx0audio", self._normalize_state(state, output="text"))
 
     async def set_mute_tx1_audio(self, state: str) -> None:
         """Send mute tx1 audio command to the device."""
-        await self._send_command("mutetx1audio", state)
+        await self._send_command("mutetx1audio", self._normalize_state(state, output="text"))
 
     async def set_oled(self, state: str) -> None:
         """Send oled command to the device."""
-        await self._send_command("oled", state)
+        await self._send_command("oled", self._normalize_state(state, output="text"))
 
     async def set_ir_active(self, state: str) -> None:
         """Send ir active command to the device."""
-        await self._send_command("iractive", state)
+        await self._send_command("iractive", self._normalize_state(state, output="text"))
 
     async def set_relay(self, state: str) -> None:
         """Send relay command to the device."""
-        await self._send_command("relay", state)
+        await self._send_command("relay", self._normalize_state(state, output="text"))
 
     async def set_cec_rx0(self, state: str) -> None:
         """Send cec enable 0 command to the device."""
-        await self._send_command("cec0en", state)
+        await self._send_command("cec0en", self._normalize_state(state, output="number"))
 
     async def set_cec_rx1(self, state: str) -> None:
         """Send cec enable 1 command to the device."""
-        await self._send_command("cec1en", state)
+        await self._send_command("cec1en", self._normalize_state(state, output="number"))
 
     async def set_cec_rx2(self, state: str) -> None:
         """Send cec enable 2 command to the device."""
-        await self._send_command("cec2en", state)
+        await self._send_command("cec2en", self._normalize_state(state, output="number"))
 
     async def set_cec_rx3(self, state: str) -> None:
         """Send cec enable 3 command to the device."""
-        await self._send_command("cec3en", state)
+        await self._send_command("cec3en", self._normalize_state(state, output="number"))
 
     async def close(self) -> None:
         """Close open client session."""
