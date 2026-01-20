@@ -1,17 +1,15 @@
 """HDFury Client API."""
 
 import asyncio
-from asyncio import TimeoutError
 import json
 import time
-from typing import Literal
+from asyncio import TimeoutError
+from typing import Literal, cast
 
 import aiohttp
-from aiohttp import ClientError, ClientResponseError
+from aiohttp import ClientError, ClientResponseError, ClientTimeout
 
 from .exceptions import HDFuryConnectionError, HDFuryParseError
-
-StateStr = Literal["0", "1", "off", "on"]
 
 
 class HDFuryAPI:
@@ -19,13 +17,14 @@ class HDFuryAPI:
 
     def __init__(self, host: str, session: aiohttp.ClientSession | None = None) -> None:
         """HDFury API Client."""
+        self.host: str = host
+        self._session: aiohttp.ClientSession = session or aiohttp.ClientSession()
+        self._last_command_time: float = 0
+        self._debounce_delay: int = 2  # seconds
 
-        self.host = host
-        self._session = session or aiohttp.ClientSession()
-        self._last_command_time = 0
-        self._debounce_delay = 2  # seconds
-
-    def _normalize_state(self, state: StateStr, *, output: Literal["text", "number"] = "text") -> str:
+    @staticmethod
+    def _normalize_state(state: str, output: Literal["text", "number"] = "text") -> str:
+        """Normalize state and optionally convert return type."""
         state = state.lower()
 
         if state in ("1", "on"):
@@ -36,7 +35,7 @@ class HDFuryAPI:
         raise HDFuryParseError(f"Invalid state: {state}")
 
     async def _wait_for_debounce(self) -> None:
-        """Helper to ensure at least `_debounce_delay` seconds have passed since last command."""
+        """Wait until at least `_debounce_delay` seconds have passed since the last command."""
         elapsed = time.time() - self._last_command_time
         if elapsed < self._debounce_delay:
             wait_time = self._debounce_delay - elapsed
@@ -47,41 +46,41 @@ class HDFuryAPI:
         url = f"http://{self.host}{endpoint}"
 
         try:
-            async with self._session.get(url, timeout=10) as response:
+            async with self._session.get(url, timeout=ClientTimeout(total=10)) as response:
                 if response.status != 200:
                     raise HDFuryConnectionError(
                         f"Unexpected response from: {url} (Status: {response.status})"
                     )
 
                 return await response.text()
-        except TimeoutError:
-            raise HDFuryConnectionError(f"Timeout while fetching: {url}")
+        except TimeoutError as err:
+            raise HDFuryConnectionError(f"Timeout while fetching: {url}") from err
         except (ClientError, ClientResponseError) as err:
             raise HDFuryConnectionError(f"Request failed ({url}): {err}") from err
         except Exception as err:
             raise HDFuryConnectionError(f"Unexpected error ({url}): {err}") from err
 
-    async def _request_json(self, path: str) -> dict:
+    async def _request_json(self, path: str) -> dict[str, str]:
         """Handle a request to the HDFury device and parse JSON."""
         response = await self._request(path)
         try:
-            return json.loads(response)
+            return cast(dict[str, str], json.loads(response))
         except json.JSONDecodeError as err:
             raise HDFuryParseError(f"Unable to decode JSON: {err}") from err
 
-    async def get_board(self) -> dict:
+    async def get_board(self) -> dict[str, str]:
         """Fetch board info."""
         await self._wait_for_debounce()
         response = await self._request_json("/ssi/brdinfo.ssi")
         return response
 
-    async def get_info(self) -> dict:
+    async def get_info(self) -> dict[str, str]:
         """Fetch device info."""
         await self._wait_for_debounce()
         response = await self._request_json("/ssi/infopage.ssi")
         return response
 
-    async def get_config(self) -> dict:
+    async def get_config(self) -> dict[str, str]:
         """Fetch device configuration."""
         await self._wait_for_debounce()
         config_response = await self._request_json("/ssi/confpage.ssi")
