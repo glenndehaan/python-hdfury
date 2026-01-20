@@ -143,7 +143,7 @@ print(TX0_INPUT_PORTS["1"])  # Output: Input 1
 | `"1"` | Input 1     |
 | `"2"` | Input 2     |
 | `"3"` | Input 3     |
-| `"4"` | Copy TX0    |
+| `"4"` | Copy TX1    |
 
 ### `TX1_INPUT_PORTS`
 
@@ -161,7 +161,7 @@ print(TX1_INPUT_PORTS["3"])  # Output: Input 3
 | `"1"` | Input 1     |
 | `"2"` | Input 2     |
 | `"3"` | Input 3     |
-| `"4"` | Copy TX1    |
+| `"4"` | Copy TX0    |
 
 ## License
 
