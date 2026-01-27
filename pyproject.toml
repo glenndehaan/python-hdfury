@@ -46,6 +46,12 @@ ignore = [
 ]
 extend-ignore = []
 
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "redefined-builtin",
+    "too-many-public-methods",
+]
+
 [tool.mypy]
 python_version = 3.11
 files = "src,hdfury"

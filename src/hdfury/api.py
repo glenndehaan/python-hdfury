@@ -29,7 +29,8 @@ class HDFuryAPI:
 
         if state in ("1", "on"):
             return "on" if output == "text" else "1"
-        elif state in ("0", "off"):
+
+        if state in ("0", "off"):
             return "off" if output == "text" else "0"
 
         raise HDFuryParseError(f"Invalid state: {state}")
