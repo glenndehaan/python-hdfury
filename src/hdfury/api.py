@@ -144,9 +144,21 @@ class HDFuryAPI:
         """Send mute tx1 audio command to the device."""
         await self._send_command("mutetx1audio", self._normalize_state(state, output="text"))
 
+    async def set_tx0_force_5v(self, state: str) -> None:
+        """Send tx0 force +5v command to the device."""
+        await self._send_command("tx0plus5", self._normalize_state(state, output="text"))
+
+    async def set_tx1_force_5v(self, state: str) -> None:
+        """Send tx1 force +5v command to the device."""
+        await self._send_command("tx1plus5", self._normalize_state(state, output="text"))
+
     async def set_oled(self, state: str) -> None:
         """Send oled command to the device."""
         await self._send_command("oled", self._normalize_state(state, output="text"))
+
+    async def set_oled_fade(self, state: str) -> None:
+        """Send oled fade (seconds) command to the device."""
+        await self._send_command("oledfade", state)
 
     async def set_ir_active(self, state: str) -> None:
         """Send ir active command to the device."""
@@ -155,6 +167,10 @@ class HDFuryAPI:
     async def set_relay(self, state: str) -> None:
         """Send relay command to the device."""
         await self._send_command("relay", self._normalize_state(state, output="text"))
+
+    async def set_cec(self, state: str) -> None:
+        """Send cec command to the device."""
+        await self._send_command("cec", self._normalize_state(state, output="text"))
 
     async def set_cec_rx0(self, state: str) -> None:
         """Send cec enable 0 command to the device."""
@@ -171,6 +187,10 @@ class HDFuryAPI:
     async def set_cec_rx3(self, state: str) -> None:
         """Send cec enable 3 command to the device."""
         await self._send_command("cec3en", self._normalize_state(state, output="number"))
+
+    async def set_reboot_timer(self, state: str) -> None:
+        """Send reboot timer (hours) command to the device."""
+        await self._send_command("reboottimer", state)
 
     async def close(self) -> None:
         """Close open client session."""

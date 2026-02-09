@@ -71,19 +71,23 @@ HDFuryAPI(host: str, session: aiohttp.ClientSession | None = None)
 
 #### Command Methods
 
-| Method                                                    | Description                    |
-|-----------------------------------------------------------|--------------------------------|
-| `issue_reboot()`                                          | Reboot the device              |
-| `issue_hotplug()`                                         | Trigger HDMI hotplug           |
-| `set_operation_mode(mode)`                                | Set device operation mode      |
-| `set_port_selection(tx0, tx1)`                            | Set device HDMI port selection |
-| `set_auto_switch_inputs(state)`                           | Toggle auto input switching    |
-| `set_htpc_mode_rx0(state)` → `set_htpc_mode_rx3(state)`   | Set HTPC mode per input        |
-| `set_mute_tx0_audio(state)` → `set_mute_tx1_audio(state)` | Mute/unmute TX audio           |
-| `set_oled(state)`                                         | Control OLED display           |
-| `set_ir_active(state)`                                    | Enable/disable IR              |
-| `set_relay(state)`                                        | Control relay state            |
-| `set_cec_rx0(state)` → `set_cec_rx3(state)`               | Enable/disable CEC per input   |
+| Method                                                    | Description                        |
+|-----------------------------------------------------------|------------------------------------|
+| `issue_reboot()`                                          | Reboot the device                  |
+| `issue_hotplug()`                                         | Trigger HDMI hotplug               |
+| `set_operation_mode(mode)`                                | Set device operation mode          |
+| `set_port_selection(tx0, tx1)`                            | Set HDMI input routing for TX0/TX1 |
+| `set_auto_switch_inputs(state)`                           | Toggle auto input switching        |
+| `set_htpc_mode_rx0(state)` → `set_htpc_mode_rx3(state)`   | Enable/disable HTPC mode per input |
+| `set_mute_tx0_audio(state)` → `set_mute_tx1_audio(state)` | Mute/unmute TX audio               |
+| `set_tx0_force_5v(state)` → `set_tx1_force_5v(state)`     | Force +5V output on TX ports       |
+| `set_oled(state)`                                         | Enable/disable OLED display        |
+| `set_oled_fade(value)`                                    | Set OLED fade timeout (seconds)    |
+| `set_ir_active(state)`                                    | Enable/disable IR receiver         |
+| `set_relay(state)`                                        | Enable/disable relay state         |
+| `set_cec(state)`                                          | Enable/disable global CEC          |
+| `set_cec_rx0(state)` → `set_cec_rx3(state)`               | Enable/disable CEC per input       |
+| `set_reboot_timer(value)`                                 | Set reboot timer (hours)           |
 
 #### Cleanup
 
