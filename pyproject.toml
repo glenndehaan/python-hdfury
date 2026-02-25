@@ -1,6 +1,6 @@
 [project]
 name = "hdfury"
-version = "1.5.0"
+version = "1.6.0"
 description = "Asynchronous Python client for HDFury devices"
 authors = [
     { name = "Glenn de Haan", email = "glenn@dehaan.cloud" }

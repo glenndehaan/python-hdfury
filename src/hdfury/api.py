@@ -120,6 +120,14 @@ class HDFuryAPI:
         """Send auto switch inputs command to the device."""
         await self._send_command("autosw", self._normalize_state(state, output="text"))
 
+    async def set_audio_unmute(self, state: str) -> None:
+        """Send audio unmute (milliseconds) command to the device."""
+        await self._send_command("unmutecnt", state)
+
+    async def set_earc_unmute(self, state: str) -> None:
+        """Send earc unmute (milliseconds) command to the device."""
+        await self._send_command("earcunmutecnt", state)
+
     async def set_htpc_mode_rx0(self, state: str) -> None:
         """Send htpc mode rx0 command to the device."""
         await self._send_command("htpcmode0", self._normalize_state(state, output="text"))
