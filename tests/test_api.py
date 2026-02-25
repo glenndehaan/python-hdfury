@@ -253,6 +253,36 @@ async def test_set_auto_switch_inputs(client: HDFuryAPI, endpoint: str, method: 
 @pytest.mark.parametrize(
     ("endpoint", "method", "value"),
     [
+        ("unmutecnt", "set_audio_unmute", "30"),
+        ("unmutecnt", "set_audio_unmute", "60"),
+    ],
+)
+async def test_set_audio_unmute(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_audio_unmute sends the correct command for each Audio Unmute state."""
+    with aioresponses() as mock:
+        mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("earcunmutecnt", "set_earc_unmute", "30"),
+        ("earcunmutecnt", "set_earc_unmute", "60"),
+    ],
+)
+async def test_set_earc_unmute(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_earc_unmute sends the correct command for each eARC Unmute state."""
+    with aioresponses() as mock:
+        mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
         ("htpcmode0", "set_htpc_mode_rx0", "on"),
         ("htpcmode1", "set_htpc_mode_rx1", "on"),
         ("htpcmode2", "set_htpc_mode_rx2", "on"),
@@ -291,12 +321,44 @@ async def test_set_mute_tx_audio(client: HDFuryAPI, endpoint: str, method: str, 
 @pytest.mark.parametrize(
     ("endpoint", "method", "value"),
     [
+        ("tx0plus5", "set_tx0_force_5v", "on"),
+        ("tx1plus5", "set_tx1_force_5v", "on"),
+        ("tx0plus5", "set_tx0_force_5v", "off"),
+        ("tx1plus5", "set_tx1_force_5v", "off"),
+    ],
+)
+async def test_set_tx_force_5v(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_tx_force_5v commands are sent correctly for each transmitter and state."""
+    with aioresponses() as mock:
+        mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
         ("oled", "set_oled", "on"),
         ("oled", "set_oled", "off"),
     ],
 )
 async def test_set_oled(client: HDFuryAPI, endpoint: str, method: str, value: str):
     """Verify set_oled sends the correct command for each OLED state."""
+    with aioresponses() as mock:
+        mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("oledfade", "set_oled_fade", "30"),
+        ("oledfade", "set_oled_fade", "60"),
+    ],
+)
+async def test_set_oled_fade(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_oled_fade sends the correct command for each OLED fade state."""
     with aioresponses() as mock:
         mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
 
@@ -336,6 +398,7 @@ async def test_set_relay(client: HDFuryAPI, endpoint: str, method: str, value: s
 @pytest.mark.parametrize(
     ("endpoint", "method", "value"),
     [
+        ("cec", "set_cec", "off"),
         ("cec0en", "set_cec_rx0", "1"),
         ("cec1en", "set_cec_rx1", "1"),
         ("cec2en", "set_cec_rx2", "0"),
@@ -344,6 +407,21 @@ async def test_set_relay(client: HDFuryAPI, endpoint: str, method: str, value: s
 )
 async def test_set_cec_rx(client: HDFuryAPI, endpoint: str, method: str, value: str):
     """Verify set_cec_rx commands are sent correctly for each CEC input."""
+    with aioresponses() as mock:
+        mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("reboottimer", "set_reboot_timer", "30"),
+        ("reboottimer", "set_reboot_timer", "60"),
+    ],
+)
+async def test_set_reboot_timer(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_reboot_timer sends the correct command for each Reboot Timer state."""
     with aioresponses() as mock:
         mock.get(f"http://192.168.1.123/cmd?{endpoint}={value}", status=200)
 
