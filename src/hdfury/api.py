@@ -19,7 +19,7 @@ class HDFuryAPI:
         """HDFury API Client."""
         self.host: str = host
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession()
-        self._last_command_time: float = 0
+        self._last_request_time: float = 0
         self._debounce_delay: int = 2  # seconds
 
     @staticmethod
@@ -36,8 +36,13 @@ class HDFuryAPI:
         raise HDFuryParseError(f"Invalid state: {state}")
 
     async def _wait_for_debounce(self) -> None:
-        """Wait until at least `_debounce_delay` seconds have passed since the last command."""
-        elapsed = time.time() - self._last_command_time
+        """Wait until at least `_debounce_delay` seconds have passed since the last request.
+
+        HDFury devices run an embedded web server with limited resources.
+        Spacing out requests prevents socket exhaustion and ensures the
+        device has time to process before the next request arrives.
+        """
+        elapsed = time.time() - self._last_request_time
         if elapsed < self._debounce_delay:
             wait_time = self._debounce_delay - elapsed
             await asyncio.sleep(wait_time)
@@ -46,8 +51,12 @@ class HDFuryAPI:
         """Handle a request to the HDFury device."""
         url = f"http://{self.host}{endpoint}"
 
+        await self._wait_for_debounce()
+
         try:
             async with self._session.get(url, timeout=ClientTimeout(total=10)) as response:
+                self._last_request_time = time.time()
+
                 if response.status != 200:
                     raise HDFuryConnectionError(
                         f"Unexpected response from: {url} (Status: {response.status})"
@@ -55,10 +64,13 @@ class HDFuryAPI:
 
                 return await response.text()
         except TimeoutError as err:
+            self._last_request_time = time.time()
             raise HDFuryConnectionError(f"Timeout while fetching: {url}") from err
         except (ClientError, ClientResponseError) as err:
+            self._last_request_time = time.time()
             raise HDFuryConnectionError(f"Request failed ({url}): {err}") from err
         except Exception as err:
+            self._last_request_time = time.time()
             raise HDFuryConnectionError(f"Unexpected error ({url}): {err}") from err
 
     async def _request_json(self, path: str) -> dict[str, str]:
@@ -71,19 +83,16 @@ class HDFuryAPI:
 
     async def get_board(self) -> dict[str, str]:
         """Fetch board info."""
-        await self._wait_for_debounce()
         response = await self._request_json("/ssi/brdinfo.ssi")
         return response
 
     async def get_info(self) -> dict[str, str]:
         """Fetch device info."""
-        await self._wait_for_debounce()
         response = await self._request_json("/ssi/infopage.ssi")
         return response
 
     async def get_config(self) -> dict[str, str]:
         """Fetch device configuration."""
-        await self._wait_for_debounce()
         config_response = await self._request_json("/ssi/confpage.ssi")
 
         try:
@@ -98,7 +107,6 @@ class HDFuryAPI:
     async def _send_command(self, command: str, option: str = "") -> None:
         """Send a command to the device."""
         await self._request(f"/cmd?{command}={option}")
-        self._last_command_time = time.time()
 
     async def issue_reboot(self) -> None:
         """Send reboot command to the device."""
