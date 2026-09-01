@@ -93,6 +93,10 @@ class HDFuryAPI:
         except HDFuryParseError:
             cec_response = {}
 
+        # Fix for VERTEX and DIVA devices, CEC defines "2" as enabled
+        if cec_response.get("cec") == "2":
+            cec_response["cec"] = "1"
+
         return {**cec_response, **config_response}
 
     async def _send_command(self, command: str, option: str = "") -> None:
