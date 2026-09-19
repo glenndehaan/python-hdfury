@@ -433,10 +433,31 @@ async def test_set_reboot_timer(client: HDFuryAPI, endpoint: str, method: str, v
 
 @pytest.mark.asyncio
 async def test_wait_for_debounce_sleeps_when_called_too_fast(client: HDFuryAPI):
-    """Verify that _wait_for_debounce sleeps if commands are called too quickly."""
+    """Verify that _wait_for_debounce sleeps if requests are made too quickly."""
     client._debounce_delay = 2
-    client._last_command_time = time.time()
+    client._last_request_time = time.time()
 
     with patch("asyncio.sleep", new=AsyncMock()) as sleep_mock:
         await client._wait_for_debounce()
         sleep_mock.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_wait_for_debounce_no_sleep_when_enough_time_elapsed(client: HDFuryAPI):
+    """Verify that no sleep occurs when enough time has passed since last request."""
+    client._debounce_delay = 2
+    client._last_request_time = time.time() - 3.0
+
+    with patch("asyncio.sleep", new=AsyncMock()) as sleep_mock:
+        await client._wait_for_debounce()
+        sleep_mock.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_request_updates_last_request_time(client: HDFuryAPI):
+    """Verify that _request updates _last_request_time after completing."""
+    before = time.time()
+
+    with aioresponses() as mock:
+        mock.get("http://192.168.1.123/test", body="ok")
+        await client._request("/test")
+
+    assert client._last_request_time >= before
