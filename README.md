@@ -85,11 +85,15 @@ HDFuryAPI(host: str, session: aiohttp.ClientSession | None = None)
 | `set_tx0_force_5v(state)` → `set_tx1_force_5v(state)`     | Force +5V output on TX ports               |
 | `set_oled(state)`                                         | Enable/disable OLED display                |
 | `set_oled_fade(value)`                                    | Set OLED fade timeout (seconds)            |
+| `set_oled_page(value)`                                    | Set OLED display page                      |
 | `set_ir_active(state)`                                    | Enable/disable IR receiver                 |
+| `set_ir_code_set(value)`                                  | Set IR code set                            |
 | `set_relay(state)`                                        | Enable/disable relay state                 |
 | `set_cec(state)`                                          | Enable/disable global CEC                  |
 | `set_cec_rx0(state)` → `set_cec_rx3(state)`               | Enable/disable CEC per input               |
 | `set_reboot_timer(value)`                                 | Set reboot timer (hours)                   |
+| `set_ip_interrupt(state)`                                 | Enable/disable IP interrupt                |
+| `set_tcp_port(value)`                                     | Set TCP port number                        |
 
 #### Cleanup
 
@@ -168,6 +172,25 @@ print(TX1_INPUT_PORTS["3"])  # Output: Input 3
 | `"2"` | Input 2     |
 | `"3"` | Input 3     |
 | `"4"` | Copy TX0    |
+
+### `OLED_PAGES`
+
+Maps OLED page identifiers to their human-readable descriptions.
+
+```python
+from hdfury import OLED_PAGES
+
+print(OLED_PAGES["0"])  # Output: Info
+```
+
+| Key   | Description |
+|-------|-------------|
+| `"0"` | Info        |
+| `"1"` | IP          |
+| `"2"` | RX Info     |
+| `"3"` | HDR 1       |
+| `"4"` | HDR 2       |
+| `"5"` | IP Info     |
 
 ## License
 

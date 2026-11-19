@@ -1,6 +1,6 @@
 """Tests for the HDFury constants."""
 
-from hdfury import OPERATION_MODES, TX0_INPUT_PORTS, TX1_INPUT_PORTS
+from hdfury import OPERATION_MODES, OLED_PAGES, TX0_INPUT_PORTS, TX1_INPUT_PORTS
 
 
 def test_operation_modes_structure():
@@ -48,3 +48,22 @@ def test_tx_copy_ports_are_symmetric():
     """Ensure Copy TX0/TX1 are correctly mirrored."""
     assert TX0_INPUT_PORTS["4"] == "Copy TX1"
     assert TX1_INPUT_PORTS["4"] == "Copy TX0"
+
+# OLED_PAGES tests
+
+def test_oled_pages_structure():
+    """Ensure correct OLED pages structure."""
+    assert isinstance(OLED_PAGES, dict)
+    assert len(OLED_PAGES) > 0
+
+def test_oled_pages_keys_are_numeric_strings():
+    """Ensure correct OLED page keys."""
+    for key in OLED_PAGES.keys():
+        assert isinstance(key, str)
+        assert key.isdigit()
+
+def test_oled_pages_values_are_descriptions():
+    """Ensure correct OLED page values."""
+    for value in OLED_PAGES.values():
+        assert isinstance(value, str)
+        assert len(value) > 0

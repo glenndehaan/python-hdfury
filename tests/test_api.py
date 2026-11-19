@@ -197,6 +197,38 @@ async def test_get_config_cec_invalid_json_is_ignored(client: HDFuryAPI):
         result = await client.get_config()
         assert result == {"autosw": "1"}
 
+@pytest.mark.asyncio
+async def test_get_config_normalizes_cec_two_to_one(client: HDFuryAPI):
+    """Verify get_config converts CEC value '2' to '1' for VERTEX/DIVA devices."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(
+            "http://hdfury.test/ssi/confpage.ssi",
+            body='{"autosw": "1"}',
+        )
+        mock.get(
+            "http://hdfury.test/ssi/cecpage.ssi",
+            body='{"cec": "2"}',
+        )
+
+        result = await client.get_config()
+        assert result == {"cec": "1", "autosw": "1"}
+
+@pytest.mark.asyncio
+async def test_get_config_normalizes_autosw_two_to_one(client: HDFuryAPI):
+    """Verify get_config converts Auto Switch value '2' to '1' for VERTEX/DIVA devices."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(
+            "http://hdfury.test/ssi/confpage.ssi",
+            body='{"autosw": "2"}',
+        )
+        mock.get(
+            "http://hdfury.test/ssi/cecpage.ssi",
+            body='{}',
+        )
+
+        result = await client.get_config()
+        assert result == {"autosw": "1"}
+
 # ---------------------------------------------------------------------------
 # Command and setter tests
 # ---------------------------------------------------------------------------
@@ -422,6 +454,68 @@ async def test_set_cec_rx(client: HDFuryAPI, endpoint: str, method: str, value: 
 )
 async def test_set_reboot_timer(client: HDFuryAPI, endpoint: str, method: str, value: str):
     """Verify set_reboot_timer sends the correct command for each Reboot Timer state."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(f"http://hdfury.test/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("ipinterrupt", "set_ip_interrupt", "on"),
+        ("ipinterrupt", "set_ip_interrupt", "off"),
+    ],
+)
+async def test_set_ip_interrupt(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_ip_interrupt sends the correct command for IP interrupt states."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(f"http://hdfury.test/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("tcpport", "set_tcp_port", "8080"),
+        ("tcpport", "set_tcp_port", "9090"),
+    ],
+)
+async def test_set_tcp_port(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_tcp_port sends the correct command for each TCP port value."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(f"http://hdfury.test/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("oledpage", "set_oled_page", "0"),
+        ("oledpage", "set_oled_page", "1"),
+        ("oledpage", "set_oled_page", "5"),
+    ],
+)
+async def test_set_oled_page(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_oled_page sends the correct command for each OLED page value."""
+    async with aiointercept(mock_external_urls=True) as mock:
+        mock.get(f"http://hdfury.test/cmd?{endpoint}={value}", status=200)
+
+        await getattr(client, method)(value)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "method", "value"),
+    [
+        ("ircodeset", "set_ir_code_set", "0"),
+        ("ircodeset", "set_ir_code_set", "1"),
+        ("ircodeset", "set_ir_code_set", "2"),
+    ],
+)
+async def test_set_ir_code_set(client: HDFuryAPI, endpoint: str, method: str, value: str):
+    """Verify set_ir_code_set sends the correct command for each IR code set value."""
     async with aiointercept(mock_external_urls=True) as mock:
         mock.get(f"http://hdfury.test/cmd?{endpoint}={value}", status=200)
 
