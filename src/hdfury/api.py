@@ -97,6 +97,10 @@ class HDFuryAPI:
         if cec_response.get("cec") == "2":
             cec_response["cec"] = "1"
 
+        # Fix for VERTEX and DIVA devices, Auto Switch defines "2" as enabled
+        if config_response.get("autosw") == "2":
+            config_response["autosw"] = "1"
+
         return {**cec_response, **config_response}
 
     async def _send_command(self, command: str, option: str = "") -> None:
@@ -172,9 +176,17 @@ class HDFuryAPI:
         """Send oled fade (seconds) command to the device."""
         await self._send_command("oledfade", state)
 
+    async def set_oled_page(self, state: str) -> None:
+        """Send oled page command to the device."""
+        await self._send_command("oledpage", state)
+
     async def set_ir_active(self, state: str) -> None:
         """Send ir active command to the device."""
         await self._send_command("iractive", self._normalize_state(state, output="text"))
+
+    async def set_ir_code_set(self, state: str) -> None:
+        """Send ir code set command to the device."""
+        await self._send_command("ircodeset", state)
 
     async def set_relay(self, state: str) -> None:
         """Send relay command to the device."""
@@ -183,6 +195,14 @@ class HDFuryAPI:
     async def set_cec(self, state: str) -> None:
         """Send cec command to the device."""
         await self._send_command("cec", self._normalize_state(state, output="text"))
+
+    async def set_ip_interrupt(self, state: str) -> None:
+        """Send ip interrupt command to the device."""
+        await self._send_command("ipinterrupt", self._normalize_state(state, output="text"))
+
+    async def set_tcp_port(self, state: str) -> None:
+        """Send tcp port command to the device."""
+        await self._send_command("tcpport", state)
 
     async def set_cec_rx0(self, state: str) -> None:
         """Send cec enable 0 command to the device."""

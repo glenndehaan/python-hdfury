@@ -24,3 +24,12 @@ TX1_INPUT_PORTS = {
     "3": "Input 3",
     "4": "Copy TX0",
 }
+
+OLED_PAGES = {
+    "0": "Info",
+    "1": "IP",
+    "2": "RX Info",
+    "3": "HDR 1",
+    "4": "HDR 2",
+    "5": "IP Info",
+}
